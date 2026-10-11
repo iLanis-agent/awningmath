@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Awning math - calculators</title>
+<style>
+  :root { --accent: #d98e1f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: #fdfaf4; color: #2e2a24; line-height: 1.55; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 2rem; margin: 0 0 8px; color: var(--accent); }
+  .lede { margin: 0 0 28px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  section { background: #fff; border: 1px solid #ece2cc; border-radius: 8px; padding: 20px 22px; }
+  h2 { font-size: 1.15rem; margin: 0 0 6px; }
+  .hint { font-size: 0.9rem; color: #776e5c; margin: 0 0 14px; }
+  label { display: block; font-size: 0.9rem; margin: 10px 0 3px; }
+  input { width: 100%; padding: 8px 10px; font-size: 1rem; border: 1px solid #d8cba8; border-radius: 5px; font-family: inherit; }
+  button { margin-top: 16px; width: 100%; padding: 11px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; font-family: inherit; }
+  button:hover { filter: brightness(1.08); }
+  .out { margin-top: 14px; font-size: 1rem; min-height: 1.4em; }
+  .out.err { color: #a32222; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; font-size: 0.85rem; color: #9a927f; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Awning math</h1>
+  <p class="lede">The depth that shades the summer, the sun it keeps for winter and the material to buy. Exact arithmetic, every borrowed number labeled.</p>
+  <div class="grid">
+    <section>
+      <h2>Depth plan</h2>
+      <p class="hint">A window becomes a projection.</p>
+      <label for="d-win">Window height (cm)</label>
+      <input id="d-win" type="number" value="120" min="0" step="10">
+      <label for="d-gap">Gap above window (cm)</label>
+      <input id="d-gap" type="number" value="20" min="0" step="5">
+      <label for="d-slope">Summer sun slope</label>
+      <input id="d-slope" type="number" value="1.9" min="0" step="0.1">
+      <button id="d-go">Size the awning</button>
+      <div class="out" id="d-out"></div>
+    </section>
+    <section>
+      <h2>Reach plan</h2>
+      <p class="hint">An awning becomes winter sun.</p>
+      <label for="r-depth">Awning depth (cm)</label>
+      <input id="r-depth" type="number" value="74" min="0" step="5">
+      <label for="r-gap">Gap above window (cm)</label>
+      <input id="r-gap" type="number" value="20" min="0" step="5">
+      <label for="r-win">Window height (cm)</label>
+      <input id="r-win" type="number" value="120" min="0" step="10">
+      <label for="r-slope">Winter sun slope</label>
+      <input id="r-slope" type="number" value="0.55" min="0" step="0.05">
+      <button id="r-go">Check the winter sun</button>
+      <div class="out" id="r-out"></div>
+    </section>
+    <section>
+      <h2>Fabric plan</h2>
+      <p class="hint">A size becomes material to buy.</p>
+      <label for="f-depth">Depth (cm)</label>
+      <input id="f-depth" type="number" value="74" min="0" step="5">
+      <label for="f-width">Width (cm)</label>
+      <input id="f-width" type="number" value="250" min="0" step="10">
+      <label for="f-waste">Waste allowance (%)</label>
+      <input id="f-waste" type="number" value="10" min="0" step="1">
+      <button id="f-go">Count the meters</button>
+      <div class="out" id="f-out"></div>
+    </section>
+  </div>
+</main>
+<footer>Built by the app factory. <a href="index.html">About</a> &middot; <a href="https://github.com/iLanis-agent/awningmath">Source</a></footer>
+<script src="engine.js"></script>
+<script>
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function show(id, r, render){
+  var el = document.getElementById(id);
+  if (r.error) { el.textContent = r.error; el.classList.add('err'); }
+  else { el.textContent = render(r); el.classList.remove('err'); }
+}
+document.getElementById('d-go').addEventListener('click', function(){
+  show('d-out', AwningMath.depthPlan(num('d-win'),num('d-gap'),num('d-slope')), function(r){ return AwningMath.renderDepth(r, num('d-win'), num('d-gap'), num('d-slope')); });
+});
+document.getElementById('r-go').addEventListener('click', function(){
+  show('r-out', AwningMath.reachPlan(num('r-depth'),num('r-gap'),num('r-win'),num('r-slope')), function(r){ return AwningMath.renderReach(r, num('r-depth'), num('r-slope')); });
+});
+document.getElementById('f-go').addEventListener('click', function(){
+  show('f-out', AwningMath.fabricPlan(num('f-depth'),num('f-width'),num('f-waste')), function(r){ return AwningMath.renderFabric(r, num('f-depth'), num('f-width'), num('f-waste')); });
+});
+</script>
+</body>
+</html>
